@@ -7,4 +7,6 @@
 # średnia wieku ogólna
 # X najbardziej popularnych miast - miasto, liczba wystąpień, X to zmienna
 # X najbardziej popularnych haseł - hasło, liczba wystąpień, X to zmienna
+# użytkownicy urodzeni między X i Y
+# najbezpieczniejsze hasło
 # .
