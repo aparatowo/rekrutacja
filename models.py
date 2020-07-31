@@ -35,6 +35,7 @@ class Confidential(Base):
     uuid = Column(String())
     username = Column(String())
     password = Column(String())
+    pass_strength = Column(Integer())
     salt = Column(String())
     md5 = Column(String())
     sha1 = Column(String())
