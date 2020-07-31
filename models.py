@@ -1,33 +1,67 @@
-#TODO
-# USER
-# "gender":"female",
-# "name":{"title":"Miss","first":"Louane","last":"Vidal"},
-# "email":"louane.vidal@example.com",
-# "registered":{"date":"2016-08-11T06:51:52.086Z","age":4},
-# "phone":"02-62-35-18-98","cell":"06-07-80-83-11",
-# "id":{"name":"INSEE","value":"2NNaN01776236 16"},
-# "nat":"FR"
-# "dob":{"date":"1966-06-26T11:50:25.558Z","age":54},
-# days_to_birthday: XYZ
-#
-#TODO
-# USER CREDENTIALS
-# "login":{
-# "uuid":"9f07341f-c7e6-45b7-bab0-af6de5a4582d",
-# "username":"angryostrich988",
-# "password":"r2d2",
-# "salt":"B5ywSDUM",
-# "md5":"afce5fbe8f32bcec1a918f75617ab654",
-# "sha1":"1a5b1afa1d9913cf491af64ce78946d18fea6b04",
-# "sha256":"0124895aa1e6e5fb0596fad4c413602e0922e8a8c2dc758bbdb3fa070ad25a07"},
-#
-#TODO
-# LOCATION
-# "street":{"number":2479,"name":"Place du 8 Février 1962"},
-# "city":"Avignon",
-# "state":"Vendée",
-# "country":"France",
-# "postcode":78276,
-# "coordinates":{"latitude":"2.0565","longitude":"95.2422"},
-# "timezone":{"offset":"+1:00","description":"Brussels, Copenhagen, Madrid, Paris"}
-# .
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+
+Base = declarative_base()
+
+class User(Base):
+    __tablename__= 'users'
+
+    id = Column(Integer(), primary_key=True, unique=True, autoincrement=True)
+    gender = Column(String(50), nullable=False)
+    title = Column(String(50), nullable=False)
+    first_name = Column(String(256), nullable=False)
+    last_name = Column(String(256), nullable=False)
+    true_id_name = Column(String(50))
+    true_id_value = Column(String(50))
+    nat = Column(String(50))
+    dob = Column(String(50), nullable=False) #day of birth
+    age = Column(Integer(), nullable=False)
+    dtb = Column(String(50), nullable=False) #days to birthday
+    register_date = Column(String(50), nullable=False)
+    registered_at_age = Column(Integer())
+
+    _confidential = relationship("Confidential")
+    contact_details = relationship("ContactDetails")
+    location = relationship("Location")
+
+
+class Confidential(Base):
+    __tablename__ = 'confidencial'
+    id = Column(Integer(), primary_key=True, unique=True)
+    user_ID = Column(Integer(), ForeignKey('users.id'))
+    id_name = Column(String())
+    id_value = Column(String())
+    uuid = Column(String())
+    username = Column(String())
+    password = Column(String())
+    salt = Column(String())
+    md5 = Column(String())
+    sha1 = Column(String())
+    sha256 = Column(String())
+
+
+class ContactDetails(Base):
+    __tablename__ = 'contact_details'
+    id = Column(Integer(), primary_key=True, unique=True)
+    user_ID = Column(Integer(), ForeignKey('users.id'))
+    email = Column(String(), nullable=False)
+    phone = Column(Integer())
+    cellphone = Column(Integer())
+
+
+class Location(Base):
+    __tablename__ = 'location'
+    id = Column(Integer(), primary_key=True, unique=True)
+    user_ID = Column(Integer(), ForeignKey('users.id'))
+    street_name = Column(String())
+    home_number = Column(String())
+    city = Column(String())
+    postcode = Column(String())
+    state = Column(String())
+    country = Column(String())
+    latitude = Column(String())
+    longitude = Column(String())
+    timezone_offset = Column(String())
+    timezone_desc = Column(String())
+
