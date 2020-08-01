@@ -1,13 +1,10 @@
-from sqlalchemy import event, create_engine
+from sqlalchemy import func, create_engine
 from sqlalchemy.orm import sessionmaker
 from models import *
 from json import load
 from datetime import datetime as dt
 
 
-# from string import ascii_lowercase, ascii_uppercase, digits, punctuation
-
-# DB and connectione setting
 def _fk_pragma_on_connect(dbapi_con):
     dbapi_con.execute('pragma foreign_keys=ON')
 
@@ -16,11 +13,12 @@ def get_session(echo=False):
     engine = create_engine('sqlite:///database.db', echo=echo)
     DBSession = sessionmaker(bind=engine)
     Base.metadata.create_all(engine)
-    event.listen(engine, 'connect', _fk_pragma_on_connect)
+    # event.listen(engine, 'connect', _fk_pragma_on_connect)
 
     return DBSession()
 
-#TODO
+
+# TODO
 # dodanie osób do bazy
 def fill_up_base():
     conn = get_session()
@@ -31,10 +29,14 @@ def fill_up_base():
         persons_dict = load(persons_json)
 
     for result in persons_dict['results']:
-        normalised_result(result)
-        result.append(Person())
+        persons_list.append(person_data_object(result))
 
-def normalised_person_data(data):
+    conn.bulk_save_objects(persons_list)
+    conn.commit()
+    conn.close()
+
+
+def person_data_object(data):
     gender = data['gender']
     title = data['name']['title']
     first_name = data['name']['first']
@@ -45,6 +47,8 @@ def normalised_person_data(data):
     dob = data['dob']['date']
     age = data['dob']['age']
     dtb = days_till_bd(dob)
+    register_date = data['registered']['date']
+    register_age = data['registered']['age']
     uuid = data['login']['uuid']
     username = data['login']['username']
     password = data['login']['password']
@@ -54,10 +58,10 @@ def normalised_person_data(data):
     sha1 = data['login']['sha1']
     sha256 = data['login']['sha256']
     email = data['email']
-    phone = data['phone']
-    cellphone = data['cell']
+    phone = clear_number(data['phone'])
+    cellphone = clear_number(data['cell'])
     street_name = data['location']['street']['name']
-    home_number = data['location']['street']['number']
+    street_number = data['location']['street']['number']
     city = data['location']['city']
     postcode = data['location']['postcode']
     state = data['location']['state']
@@ -67,34 +71,76 @@ def normalised_person_data(data):
     timezone_offset = data['location']['timezone']['offset']
     timezone_desc = data['location']['timezone']['description']
 
+    return Person(gender=gender, title=title, first_name=first_name, last_name=last_name,
+                  id_name=id_name, id_value=id_value, nat=nat, dob=dob, age=age, dtb=dtb,
+                  register_date=register_date, register_age=register_age, uuid=uuid,
+                  username=username, password=password, pass_strength=pass_strength,
+                  salt=salt, md5=md5, sha1=sha1, sha256=sha256, email=email, phone=phone,
+                  cellphone=cellphone, street_name=street_name, street_number=street_number,
+                  city=city, postcode=postcode, state=state, country=country, latitude=latitude,
+                  longitude=longitude, timezone_offset=timezone_offset, timezone_desc=timezone_desc)
+
+
 def str_to_date(date, skip_char=1):
     return dt.fromisoformat(date[0:-skip_char])
+
 
 def days_till_bd(date):
     now = dt.now()
     dob = str_to_date(date)
-    this_year_bd = dt(now.year, dob.month, dob.day)
-    next_year_bd = dt(now.year+1, dob.month, dob.day)
+    try:
+        this_year_bd = dt(now.year, dob.month, dob.day)
+        next_year_bd = dt(now.year + 1, dob.month, dob.day)
+    except ValueError:
+        this_year_bd = dt(now.year, dob.month, dob.day - 1)
+        next_year_bd = dt(now.year + 1, dob.month, dob.day - 1)
+        # metoda ominięcia problemu roku przestępnego
+        # zakładam, że osoby urodzone 29 lutego jednak nie świętują urodzin co 4 lata
+
     delta = [(this_year_bd - now), (next_year_bd - now)]
     delta = max(delta)
     return delta.days
 
 
-
 #TODO
+# nie uwzględnia sytuacji, gdzie jest kilka takich miast
+def query_popular_city(int=1):
+    conn = get_session()
+
+    query_result = [city for city, in conn.query(Person.city).all()]
+    result_set = set(query_result)
+
+    cities_counted = [(city, query_result.count(city)) for city in result_set]
+    most_popular = sorted(cities_counted, key=lambda c: c[1], reverse=True)[0:abs(int)]
+    conn.close()
+    return most_popular
+
+def query_popular_pass(int=1):
+    conn = get_session()
+
+    query_result = [password for password, in conn.query(Person.password).all()]
+    result_set = set(query_result)
+
+    passwords_counted = [(password, query_result.count(password)) for password in result_set]
+    most_popular = sorted(passwords_counted, key=lambda c: c[1], reverse=True)[0:abs(int)]
+    conn.close()
+    return most_popular
+
+def query_strong_passwords():
+    conn = get_session()
+    max_pass_score, = conn.query(func.max(Person.pass_strength)).one()
+    # print(max_pass_score)
+    best_passwords = conn.query(Person.password, Person.pass_strength) \
+        .filter(Person.pass_strength == max_pass_score).all()
+    return best_passwords
+
+# TODO
 # użytkownicy urodzeni w zakresie dat
 
-#TODO
+# TODO
 # średnia wieku
 
-#TODO
-# popularne miasta
 
-#TODO
-# popularne hasła
-
-#TODO
-# najsilniejsze hasło
 
 def pass_strength_score(password):
     score = 0
@@ -126,9 +172,14 @@ def pass_strength_score(password):
 
     return score
 
-#TODO
-# dni do urodzin
-
-
-#TODO
+# TODO
 # dodatkowe: request z api
+
+def clear_number(data):
+    cleared_data = []
+    new_string = ""
+    for symbol in data:
+        if symbol.isdigit():
+            cleared_data.append(symbol)
+    data_string = new_string.join(cleared_data)
+    return data_string
