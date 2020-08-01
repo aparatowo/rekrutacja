@@ -141,6 +141,27 @@ def query_strong_passwords():
 # średnia wieku
 
 
+def average_age(gender=None):
+    gender = gender
+    query_result = None
+    conn = get_session()
+
+    if gender in ['male', 'female']:
+        query_result = [age for age, in conn.query(Person.age).filter(Person.gender == gender).all()]
+    else:
+        query_result = [age for age, in conn.query(Person.age).all()]
+    conn.close()
+    average = float(sum(query_result))/len(query_result)
+    return average
+
+def average_gender():
+    query_result = None
+    conn = get_session()
+    query_result = [gender for gender, in conn.query(Person.gender).all()]
+    male_percentage = float(query_result.count('male'))/len(query_result)
+    female_percentage = float(query_result.count('female'))/len(query_result)
+    return male_percentage, female_percentage
+
 
 def pass_strength_score(password):
     score = 0
