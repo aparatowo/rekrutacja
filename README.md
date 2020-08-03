@@ -35,7 +35,7 @@ powinno zwrócić pięć najczęstszych haseł użytkowników z bazy.
 Wymagania techniczne:
 * Python 3.7+
 * prosimy używać przede wszystkim modułów z biblioteki standardowej (poza wybranym ORMem, modułem **requests** jeśli korzysta się z API), nie korzystać z modułu **pandas**
-* do implementacji interfejsu linii poleceń polecamy użyć modułu **argparse** (z biblioteki standardowej) lub **click** (https://click.palletsprojects.com/en/7.x/)
+* do implementacji interfejsu linii poleceń polecamy użyć modułu **argparse** (z biblioteki standardowej) lub **click** (3)
 * README z opisem jak postawić projekt oraz spisem dostępnych komend
 * kod napisany obiektowo
 * prosimy użyć bazy danych **SQLite**

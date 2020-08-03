@@ -121,8 +121,8 @@ def query_popular_pass(int=1):
     query_result = [password for password, in conn.query(Person.password).all()]
     result_set = set(query_result)
 
-    passwords_counted = [(password, query_result.count(password)) for password in result_set]
-    most_popular = sorted(passwords_counted, key=lambda c: c[1], reverse=True)[0:abs(int)]
+    counted_passwords = [(password, query_result.count(password)) for password in result_set]
+    most_popular = sorted(counted_passwords, key=lambda c: c[1], reverse=True)[0:abs(int)]
     conn.close()
     return most_popular
 
