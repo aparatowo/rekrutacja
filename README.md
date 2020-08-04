@@ -2,7 +2,7 @@ Zadanie rekrutacyjne BACKEND
 Autor rozwiązania: Rafał Nitychoruk
 
 #Wymagania
-Program wymaga do działania bibliotek standardowych oraz SQLAlchemy.
+Program wymaga do działania bibliotek standardowych dla Pythona 3.7 oraz SQLAlchemy.
 
 #Uruchamianie
 Aby uruchomić program należy z przejść do folderu nadrzędnego nad programem i podać w terminalu jego nazwę wraz z komendą.
@@ -10,14 +10,14 @@ Aby uruchomić program należy z przejść do folderu nadrzędnego nad programem
 Przykładowa komenda:
 >python play.py -h
 
-Aby poznać dostępne polecenia linii komend możesz także użyć komendy "python play.py -h".
-Używając starszej wersji pythona należy użyć komendy "python3 play.py -h".
+Aby poznać dostępne polecenia linii komend możesz także użyć komendy
+>"python play.py -h".
 
 #Początek pracy
 Na początku pracy z programem neleży wypełnić bazę danymi.
 służy do tego komenda -f
 
-#Dostępne komendy
+#Dostępne argumenty
 
 >-h, --help
     Pokazuje dostępne komendy wraz z opcjami

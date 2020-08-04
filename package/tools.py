@@ -75,7 +75,10 @@ def person_data_formating(data):
 
 
 def str_to_date(input_string):
+    # Poniższa linia omija nieobsługiwany format UTC bez utraty danych.
+    # Lepsza byłaby biblioteka dodatkowa, jednak jest wbrew wytycznym.
     date = str(input_string).replace('Z', '+00:00')
+
     try:
         date = dt.fromisoformat(date)
         return date
@@ -106,14 +109,15 @@ def str_to_date(input_string):
 def days_till_bd(date):
     now = dt.now()
     dob = str_to_date(date)
+
+    # Obsługa błędu omija problem osób urodzonych w roku przestępnym.
+    # Zakłada jednak, że osoby urodzone 29 lutego jednak nie świętują urodzin co 4 lata lecz z końcem lutego.
     try:
         this_year_bd = dt(now.year, dob.month, dob.day)
         next_year_bd = dt(now.year + 1, dob.month, dob.day)
     except ValueError:
         this_year_bd = dt(now.year, dob.month, dob.day - 1)
         next_year_bd = dt(now.year + 1, dob.month, dob.day - 1)
-        # metoda ominięcia problemu roku przestępnego
-        # zakładam, że osoby urodzone 29 lutego jednak nie świętują urodzin co 4 lata lecz z końcem lutego.
 
     delta = [(this_year_bd - now), (next_year_bd - now)]
     delta = max(delta)
