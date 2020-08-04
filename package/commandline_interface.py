@@ -7,7 +7,7 @@ def argparse_commands():
     parser.add_argument('-f', '--fill', action='store_true',
                         help='Funkcja inicjalizuje bazę oraz wypełnia ją przykładowymi danymi.')
     parser.add_argument('-d', '--dob', nargs=2,
-                        help='Funkcja zwraca użytkowników urodzinych w podanym zakresie dat. Format daty to "YYYY-MM-DD YYYY-MM-DD"')
+                        help='Funkcja zwraca użytkowników urodzinych w podanym zakresie dat. Optymalny format daty to "YYYY-MM-DD YYYY-MM-DD"')
     parser.add_argument('-a', '--average-age',
                         choices=['female', 'male', 'balance'],
                         help='Funkcja zwraca średnią wieku dla płci lub całości populacji w bazie.')

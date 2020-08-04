@@ -78,9 +78,29 @@ def str_to_date(input_string):
     date = str(input_string).replace('Z', '+00:00')
     try:
         date = dt.fromisoformat(date)
+        return date
     except (ValueError, TypeError):
-        print('Nieprawidłowy format daty')
-    return date
+        pass
+
+    try:
+        date = dt.strptime(date, '%Y-%M-%D')
+        return date
+    except (ValueError, TypeError):
+        pass
+
+    try:
+        date = dt.strptime(date, '%Y-%M')
+        return date
+    except (ValueError, TypeError):
+        pass
+
+    try:
+        date = dt.strptime(date, '%Y')
+        return date
+    except (ValueError, TypeError):
+        pass
+
+    raise ValueError('Nieprawidłowy format daty')
 
 
 def days_till_bd(date):

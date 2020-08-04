@@ -8,19 +8,19 @@ class Person(Base):
     __tablename__ = 'persons'
 
     id = Column(Integer(), primary_key=True, unique=True, autoincrement=True)
-    gender = Column(String(50), nullable=False)
-    title = Column(String(50), nullable=False)
-    first_name = Column(String(256), nullable=False)
-    last_name = Column(String(256), nullable=False)
-    id_name = Column(String(50))
-    id_value = Column(String(50))
-    nat = Column(String(50))
+    gender = Column(String(), nullable=False)
+    title = Column(String(), nullable=False)
+    first_name = Column(String(), nullable=False)
+    last_name = Column(String(), nullable=False)
+    id_name = Column(String())
+    id_value = Column(String())
+    nat = Column(String())
     dob = Column(DateTime(timezone=True))  # day of birth
     age = Column(Integer(), nullable=False)
     dtb = Column(String(50), nullable=False)  # days to birthday
-    register_date = Column(String(50), nullable=False)
+    register_date = Column(String())
     register_age = Column(Integer())
-    uuid = Column(String(256))
+    uuid = Column(String())
     username = Column(String())
     password = Column(String())
     pass_strength = Column(Integer())
