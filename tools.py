@@ -13,13 +13,10 @@ def get_session(echo=False):
     engine = create_engine('sqlite:///database.db', echo=echo)
     DBSession = sessionmaker(bind=engine)
     Base.metadata.create_all(engine)
-    # event.listen(engine, 'connect', _fk_pragma_on_connect)
 
     return DBSession()
 
 
-# TODO
-# dodanie osób do bazy
 def fill_up_base():
     conn = get_session()
     persons_dict = None
@@ -29,14 +26,14 @@ def fill_up_base():
         persons_dict = load(persons_json)
 
     for result in persons_dict['results']:
-        persons_list.append(person_data_object(result))
+        persons_list.append(person_data_formating(result))
 
     conn.bulk_save_objects(persons_list)
     conn.commit()
     conn.close()
 
 
-def person_data_object(data):
+def person_data_formating(data):
     gender = data['gender']
     title = data['name']['title']
     first_name = data['name']['first']
@@ -44,10 +41,10 @@ def person_data_object(data):
     id_name = data['id']['name']
     id_value = data['id']['value']
     nat = data['nat']
-    dob = data['dob']['date']
+    dob = str_to_date(data['dob']['date'])
     age = data['dob']['age']
     dtb = days_till_bd(dob)
-    register_date = data['registered']['date']
+    register_date = str_to_date(data['registered']['date'])
     register_age = data['registered']['age']
     uuid = data['login']['uuid']
     username = data['login']['username']
@@ -58,8 +55,8 @@ def person_data_object(data):
     sha1 = data['login']['sha1']
     sha256 = data['login']['sha256']
     email = data['email']
-    phone = clear_number(data['phone'])
-    cellphone = clear_number(data['cell'])
+    phone = clear_phone_number(data['phone'])
+    cellphone = clear_phone_number(data['cell'])
     street_name = data['location']['street']['name']
     street_number = data['location']['street']['number']
     city = data['location']['city']
@@ -81,9 +78,13 @@ def person_data_object(data):
                   longitude=longitude, timezone_offset=timezone_offset, timezone_desc=timezone_desc)
 
 
-def str_to_date(date, skip_char=1):
-    return dt.fromisoformat(date[0:-skip_char])
-
+def str_to_date(input_string):
+    date = str(input_string).replace('Z', '+00:00')
+    try:
+        date = dt.fromisoformat(date)
+    except (ValueError, TypeError):
+        print('Nieprawidłowy format daty')
+    return date
 
 def days_till_bd(date):
     now = dt.now()
@@ -102,9 +103,8 @@ def days_till_bd(date):
     return delta.days
 
 
-#TODO
-# nie uwzględnia sytuacji, gdzie jest kilka takich miast
-def query_popular_city(int=1):
+def popular_city(int=1):
+    most_popular = []
     conn = get_session()
 
     query_result = [city for city, in conn.query(Person.city).all()]
@@ -115,7 +115,7 @@ def query_popular_city(int=1):
     conn.close()
     return most_popular
 
-def query_popular_pass(int=1):
+def popular_passwords(int=1):
     conn = get_session()
 
     query_result = [password for password, in conn.query(Person.password).all()]
@@ -126,33 +126,36 @@ def query_popular_pass(int=1):
     conn.close()
     return most_popular
 
-def query_strong_passwords():
+def strongest_password():
     conn = get_session()
     max_pass_score, = conn.query(func.max(Person.pass_strength)).one()
-    # print(max_pass_score)
     best_passwords = conn.query(Person.password, Person.pass_strength) \
-        .filter(Person.pass_strength == max_pass_score).all()
+        .filter(Person.pass_strength == max_pass_score).one()
     return best_passwords
 
 # TODO
 # użytkownicy urodzeni w zakresie dat
+def dob_range(first_date, second_date):
+    first_date = str_to_date(first_date)
+    second_date = str_to_date(second_date)
+    conn = get_session()
+    query_result = conn.query(Person).filter(Person.dob >= first_date).filter(Person.dob <= second_date).all()
+    return query_result
 
-# TODO
-# średnia wieku
 
-
-def average_age(gender=None):
-    gender = gender
+def average_age():
     query_result = None
     conn = get_session()
 
-    if gender in ['male', 'female']:
-        query_result = [age for age, in conn.query(Person.age).filter(Person.gender == gender).all()]
-    else:
-        query_result = [age for age, in conn.query(Person.age).all()]
-    conn.close()
-    average = float(sum(query_result))/len(query_result)
-    return average
+    query_result = conn.query(Person.age, Person.gender).all()
+    general_result = [age for age, gender in query_result]
+    male_result = [age for age, gender in query_result if gender == 'male']
+    female_result = [age for age, gender in query_result if gender == 'female']
+
+    averages = [float(sum(gender_age_result))/len(gender_age_result)
+                for gender_age_result in [general_result, male_result, female_result]]
+
+    return averages
 
 def average_gender():
     query_result = None
@@ -196,7 +199,7 @@ def pass_strength_score(password):
 # TODO
 # dodatkowe: request z api
 
-def clear_number(data):
+def clear_phone_number(data):
     cleared_data = []
     new_string = ""
     for symbol in data:
@@ -204,3 +207,11 @@ def clear_number(data):
             cleared_data.append(symbol)
     data_string = new_string.join(cleared_data)
     return data_string
+
+def input_validation(number_given):
+    number_given = number_given
+    try:
+        proper_integer = int(number_given)
+    except (ValueError, TypeError):
+        proper_integer = 1
+    return abs(proper_integer)
