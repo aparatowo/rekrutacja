@@ -1,12 +1,8 @@
 from sqlalchemy import func, create_engine
 from sqlalchemy.orm import sessionmaker
-from models import *
+from package.models import *
 from json import load
 from datetime import datetime as dt
-
-
-def _fk_pragma_on_connect(dbapi_con):
-    dbapi_con.execute('pragma foreign_keys=ON')
 
 
 def get_session(echo=False):
@@ -22,7 +18,7 @@ def fill_up_base():
     persons_dict = None
     persons_list = []
 
-    with open("persons.json", encoding="utf8") as persons_json:
+    with open("package/persons.json", encoding="utf8") as persons_json:
         persons_dict = load(persons_json)
 
     for result in persons_dict['results']:
@@ -86,6 +82,7 @@ def str_to_date(input_string):
         print('Nieprawidłowy format daty')
     return date
 
+
 def days_till_bd(date):
     now = dt.now()
     dob = str_to_date(date)
@@ -96,7 +93,7 @@ def days_till_bd(date):
         this_year_bd = dt(now.year, dob.month, dob.day - 1)
         next_year_bd = dt(now.year + 1, dob.month, dob.day - 1)
         # metoda ominięcia problemu roku przestępnego
-        # zakładam, że osoby urodzone 29 lutego jednak nie świętują urodzin co 4 lata
+        # zakładam, że osoby urodzone 29 lutego jednak nie świętują urodzin co 4 lata lecz z końcem lutego.
 
     delta = [(this_year_bd - now), (next_year_bd - now)]
     delta = max(delta)
@@ -115,6 +112,7 @@ def popular_city(int=1):
     conn.close()
     return most_popular
 
+
 def popular_passwords(int=1):
     conn = get_session()
 
@@ -126,15 +124,15 @@ def popular_passwords(int=1):
     conn.close()
     return most_popular
 
+
 def strongest_password():
     conn = get_session()
     max_pass_score, = conn.query(func.max(Person.pass_strength)).one()
     best_passwords = conn.query(Person.password, Person.pass_strength) \
-        .filter(Person.pass_strength == max_pass_score).one()
+        .filter(Person.pass_strength == max_pass_score).all()
     return best_passwords
 
-# TODO
-# użytkownicy urodzeni w zakresie dat
+
 def dob_range(first_date, second_date):
     first_date = str_to_date(first_date)
     second_date = str_to_date(second_date)
@@ -152,17 +150,18 @@ def average_age():
     male_result = [age for age, gender in query_result if gender == 'male']
     female_result = [age for age, gender in query_result if gender == 'female']
 
-    averages = [float(sum(gender_age_result))/len(gender_age_result)
+    averages = [float(sum(gender_age_result)) / len(gender_age_result)
                 for gender_age_result in [general_result, male_result, female_result]]
 
     return averages
+
 
 def average_gender():
     query_result = None
     conn = get_session()
     query_result = [gender for gender, in conn.query(Person.gender).all()]
-    male_percentage = float(query_result.count('male'))/len(query_result)
-    female_percentage = float(query_result.count('female'))/len(query_result)
+    male_percentage = float(query_result.count('male')) / len(query_result) * 100
+    female_percentage = float(query_result.count('female')) / len(query_result) * 100
     return male_percentage, female_percentage
 
 
@@ -196,8 +195,6 @@ def pass_strength_score(password):
 
     return score
 
-# TODO
-# dodatkowe: request z api
 
 def clear_phone_number(data):
     cleared_data = []
@@ -207,6 +204,7 @@ def clear_phone_number(data):
             cleared_data.append(symbol)
     data_string = new_string.join(cleared_data)
     return data_string
+
 
 def input_validation(number_given):
     number_given = number_given
