@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
 
 Base = declarative_base()
+
 
 class Person(Base):
     __tablename__ = 'persons'
@@ -15,9 +15,9 @@ class Person(Base):
     id_name = Column(String(50))
     id_value = Column(String(50))
     nat = Column(String(50))
-    dob = Column(String(50), nullable=False) #day of birth
+    dob = Column(DateTime(timezone=True))  # day of birth
     age = Column(Integer(), nullable=False)
-    dtb = Column(String(50), nullable=False) #days to birthday
+    dtb = Column(String(50), nullable=False)  # days to birthday
     register_date = Column(String(50), nullable=False)
     register_age = Column(Integer())
     uuid = Column(String(256))
@@ -42,3 +42,8 @@ class Person(Base):
     timezone_offset = Column(String())
     timezone_desc = Column(String())
 
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}, {self.gender} from {self.city} in {self.country}'
+
+    def __repr__(self):
+        return f'{self.first_name} {self.last_name} from {self.country}'
