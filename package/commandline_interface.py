@@ -68,8 +68,8 @@ def argparse_commands():
             print('Lista najpopularniejszych miast z częstotliwością występowania:')
             print(' ' + 42 * '-')  # linia oddzielająca
 
-            for count, item in enumerate(get_popular_city, 1):
-                print(f'|{count:4}. {item[0]:30} | {item[1]}x |')  # numer porządkowy + nazwa miasta + licznik
+            for count, city in enumerate(get_popular_city, 1):
+                print(f'|{count:4}. {city[0]:30} | {city[1]}x |')  # numer porządkowy + miasto + licznik
                 print(' ' + 42 * '-')  # linia oddzielająca
 
     elif args.common_pass:
@@ -77,14 +77,14 @@ def argparse_commands():
         get_popular_pass = popular_passwords(validated_input)
 
         if validated_input == 1:
-            city = get_popular_pass[0]
-            print(f'Najpopularniejsze hasło to {city[0]} - pojawia się w bazie {city[1]}x.')
+            password = get_popular_pass[0]
+            print(f'Najpopularniejsze hasło to {password[0]} - pojawia się w bazie {password[1]}x.')
         elif validated_input > 1:
             print('Lista najpopularniejszych haseł z częstotliwością występowania:')
             print(' ' + 42 * '-')  # linia oddzielająca
 
-            for count, item in enumerate(get_popular_pass, 1):
-                print(f'|{count:4}. {item[0]:30} | {item[1]}x |')  # numer porządkowy + hasło + licznik
+            for count, password in enumerate(get_popular_pass, 1):
+                print(f'|{count:4}. {password[0]:30} | {password[1]}x |')  # numer porządkowy + miasto + licznik
                 print(' ' + 42 * '-')  # linia oddzielająca
 
 
@@ -96,8 +96,8 @@ def argparse_commands():
             print(f'Najmocniejszymi hasłami w bazie są:')
             print(' ' + 42 * '-')  # linia oddzielająca
 
-            for count, item in enumerate(password, 1):
-                print(f'|{count:4}. {item[0]:30} | {item[1]}x |')  # numer porządkowy + hasło + licznik
+            for count, password in enumerate(password, 1):
+                print(f'|{count:4}. {password[0]:30} | {password[1]}x |')  # numer porządkowy + hasło + licznik
                 print(' ' + 42 * '-')  # linia oddzielająca
 
     elif args.fill:
