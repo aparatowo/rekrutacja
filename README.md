@@ -18,25 +18,33 @@ Na początku pracy z programem neleży wypełnić bazę danymi.
 służy do tego komenda -f
 
 #Dostępne komendy
--h, --help
+
+>-h, --help
     Pokazuje dostępne komendy wraz z opcjami
--f', --fill
+
+>-f', --fill
     Inicjalizuje bazę oraz wypełnia ją przykładowymi danymi.')
--d, --dob
+
+>-d, --dob
     Zwraca użytkowników urodzonych w podanym zakresie dat.
     Wymaga dwóch atrybutów daty w formacie UTC, YYYY-MM-DD, YYYY-MM lub YYYY"
--a, --average-age
+
+>-a, --average-age
     Zwraca średnią wieku dla płci lub całości populacji w bazie.
     Wymaga atrybutu z puli ['female', 'male', 'balance'].
--g, --average-gender
+
+>-g, --average-gender
     Zwraca średnią dla jednej lub wszystkich płci w populacji zapisanej w bazie.
     Wymaga atrybutu z puli ['female', 'male', 'balance'].
--c, --common-city
+
+>-c, --common-city
     Zwraca najpopularniejsze miasta spośród danych w bazie. Funkcja zwraca wybraną liczbę miast.
     Wymaga atrybutu typu int. Wartość minimalna to jedno miasto.
--p, --common-pass
+
+>-p, --common-pass
     Zwraca najpopularniejsze hasła spośród danych w bazie. Funkcja zwraca wybraną liczbę haseł.
     Wymaga atrybutu typu int. Wartość minimalna to jedno hasło.
--s, --strong-pass
+
+>-s, --strong-pass
     Funkcja zwraca najmocniejsze hasło spośród danych w bazie.
 
