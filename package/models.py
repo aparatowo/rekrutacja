@@ -5,6 +5,11 @@ Base = declarative_base()
 
 
 class Person(Base):
+    """
+    SQLAlchemy object and database model.
+    Two magic methods were modified: __repr__ and __str__.
+    This way we can show more readable format of data when needed.
+    """
     __tablename__ = 'persons'
 
     id = Column(Integer(), primary_key=True, unique=True, autoincrement=True)
@@ -17,7 +22,7 @@ class Person(Base):
     nat = Column(String())
     dob = Column(DateTime(timezone=True))  # day of birth
     age = Column(Integer(), nullable=False)
-    dtb = Column(String(50), nullable=False)  # days to birthday
+    dtb = Column(Integer(), nullable=False)  # days to birthday
     register_date = Column(String())
     register_age = Column(Integer())
     uuid = Column(String())
@@ -28,7 +33,7 @@ class Person(Base):
     md5 = Column(String())
     sha1 = Column(String())
     sha256 = Column(String())
-    email = Column(String(), nullable=False)
+    email = Column(String())
     phone = Column(Integer())
     cellphone = Column(Integer())
     street_name = Column(String())
@@ -43,7 +48,7 @@ class Person(Base):
     timezone_desc = Column(String())
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}, {self.gender} from {self.city} in {self.country}'
+        return f'{self.title} {self.first_name} {self.last_name}, {self.gender} from {self.city} in {self.country}'
 
     def __repr__(self):
         return f'{self.first_name} {self.last_name} from {self.country}'

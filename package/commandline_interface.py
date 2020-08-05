@@ -1,8 +1,15 @@
 import argparse
-from .tools import fill_up_base, average_age, input_validation, dob_range, \
+from .tools import fill_up_base, average_age, dob_range, \
     average_gender, popular_city, popular_passwords, strongest_password
 
+
 def argparse_commands():
+    """
+    Function stores argparse commands. It runs without any other arguments than those used in terminal.
+
+    >python play.py -h
+
+    """
     parser = argparse.ArgumentParser(description='Prosty program do zarządzania danymi.')
     parser.add_argument('-f', '--fill', action='store_true',
                         help='Funkcja inicjalizuje bazę oraz wypełnia ją przykładowymi danymi.')
@@ -58,13 +65,13 @@ def argparse_commands():
                   f'Mężczyźni stanowią {get_average[0]}% populacji.')
 
     elif args.common_city:
-        validated_input = input_validation(args.common_city)
-        get_popular_city = popular_city(validated_input)
+        user_input = args.common_city
+        get_popular_city = popular_city(user_input)
 
-        if validated_input == 1:
+        if user_input == 1:
             city = get_popular_city[0]
             print(f'Najpopularniejsze miasto to {city[0]} - pojawia się w bazie {city[1]}x.')
-        elif validated_input > 1:
+        elif user_input > 1:
             print('Lista najpopularniejszych miast z częstotliwością występowania:')
             print(' ' + 42 * '-')  # linia oddzielająca
 
@@ -73,13 +80,13 @@ def argparse_commands():
                 print(' ' + 42 * '-')  # linia oddzielająca
 
     elif args.common_pass:
-        validated_input = input_validation(args.common_pass)
-        get_popular_pass = popular_passwords(validated_input)
+        user_input = args.common_pass
+        get_popular_pass = popular_passwords(user_input)
 
-        if validated_input == 1:
+        if user_input == 1:
             password = get_popular_pass[0]
             print(f'Najpopularniejsze hasło to {password[0]} - pojawia się w bazie {password[1]}x.')
-        elif validated_input > 1:
+        elif user_input > 1:
             print('Lista najpopularniejszych haseł z częstotliwością występowania:')
             print(' ' + 42 * '-')  # linia oddzielająca
 
