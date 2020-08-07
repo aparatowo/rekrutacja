@@ -3,6 +3,7 @@ from .tools import fill_up_base, average_age, dob_range, \
     average_gender, popular_city, popular_passwords, strongest_password
 
 
+
 def argparse_commands():
     """
     Function stores argparse attributes and arguments.
@@ -12,7 +13,7 @@ def argparse_commands():
 
     """
     parser = argparse.ArgumentParser(description='Prosty program do zarządzania danymi.')
-    parser.add_argument('-f', '--fill', action='store_true',
+    parser.add_argument('-f', '--fill',
                         help='Funkcja inicjalizuje bazę oraz wypełnia ją przykładowymi danymi.')
     parser.add_argument('-d', '--dob', nargs=2,
                         help='Funkcja zwraca użytkowników urodzinych w podanym zakresie dat. Optymalny format daty to "YYYY-MM-DD YYYY-MM-DD"')
@@ -109,13 +110,13 @@ def argparse_commands():
             print(' ' + 42 * '-')  # simple separator line
 
             for count, password in enumerate(password, 1):
-                print(f'|{count:4}. {password[0]:30} | {password[1]}x |')  # order number + password + counter
-                print(' ' + 42 * '-')  # simple separator line
+                print(f'|{count:4}. {password[0]:30} | {password[1]} |')  # order number + password + counter
+                print(' ' + 41 * '-')  # simple separator line
 
-    # This section refers to -h argument. It fills up database with sample data.
+    # This section refers to -f argument. It fills up database with sample data.
     elif args.fill:
-        fill_up_base()
-        print()
+        user_input = args.fill
+        fill_up_base(user_input)
 
     # Simple helper section.
     else:

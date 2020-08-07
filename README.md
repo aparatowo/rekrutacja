@@ -2,7 +2,9 @@
 Autor rozwiązania: Rafał Nitychoruk
 
 ###Wymagania
-Program wymaga do działania bibliotek standardowych dla Pythona 3.7 oraz SQLAlchemy.
+Program wymaga do działania bibliotek standardowych dla Pythona 3.7 oraz SQLAlchemy i Requests.<br>
+Dokładna specyfikacja niezbędnych bibliotek i ich zaleźności znajduje się w pliku requirements.txt
+
 
 ###Uruchamianie
 Aby uruchomić program należy z przejść do folderu nadrzędnego nad programem i podać w terminalu jego nazwę wraz z komendą.
@@ -24,13 +26,21 @@ Pokazuje dostępne komendy wraz z opcjami.
     >python play.py -h
  
 * '-f, --fill' <br>
-Inicjalizuje bazę oraz wypełnia ją przykładowymi danymi.
-    >python play.py -f
+Inicjalizuje bazę oraz wypełnia ją przykładowymi danymi. <br>
+Przykładowe dane znajdują się w źródle programu, jednak można użyć źródła z sieci (randomuser.me).
+Funkcja wymaga podania atrybutu 'sample' by użyć źródła domyślnego (1000 gotowych rekordów)<br>
+Funkcja wymaga podania atrybutu w zakresie 1-5000 by użyć źródła API (rekordy unikalne)<br>
+    >python play.py -f sample
+
+    >python play.py -f 3500
 
 * '-d, --dob' <br>
 Zwraca użytkowników urodzonych w podanym zakresie dat. <br>
-Wymaga dwóch atrybutów daty w formacie UTC, YYYY-MM-DD, YYYY-MM lub YYYY"
+Wymaga dwóch atrybutów daty w formacie UTC, YYYY-MM-DD, YYYY-MM lub YYYY" <br>
+Uwaga: czas w formacie UTC powinien być podany w zapisie '+HH:MM' lub zakończony Z (Zulu).
     >python play.py -d 1986-06-21T01:04:42.172Z 1990
+
+    >python play.py -d 1977 1986-06-21T01:04:42+13:00
 
 * '-a, --average-age' <br>
 Zwraca średnią wieku dla płci lub całości populacji w bazie. <br>

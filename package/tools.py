@@ -1,8 +1,9 @@
 from sqlalchemy import func, create_engine
 from sqlalchemy.orm import sessionmaker
 from package.models import Base, Person
-from json import load
+from json import load, loads
 from datetime import datetime as dt
+import requests
 
 
 def get_session():
@@ -18,17 +19,39 @@ def get_session():
     return DBSession()
 
 
-def fill_up_base():
+def fill_up_base(user_input):
     """
     This function will fill up database with example data.
+
+    :param user_input: This parameter specifies if function uses default sample data from package or API data
+    :arg (int): If given argument is digit, function will turn it into an absolute number in range 1-5000.
+    :arg smaple: If user pick 'sample' as an input argument, then function will use sample data from package.
+
     """
     example_file = "package/persons.json"
     conn = get_session()
     persons_dict = None
     persons_list = []
 
-    with open(example_file, encoding="utf8") as persons_json:
-        persons_dict = load(persons_json)
+    if user_input.isdigit():
+        user_input = int(user_input)
+
+        if user_input > 5000:
+            user_input = 5000
+            print("Zredukowano liczbę pobranych rekordów do 5000.")
+        elif user_input == 0:
+            user_input = 1
+            print("Minimalna liczba recordów to 1.")
+
+        response = requests.get('https://randomuser.me/api/', params={'results': abs(user_input)})
+        persons_dict = loads(response.content)
+
+    elif user_input == 'sample':
+        with open(example_file, encoding="utf8") as persons_json:
+            persons_dict = load(persons_json)
+
+    else:
+        raise ValueError("Use 'sample' argument or pick a number in range 1-5000.")
 
     for result in persons_dict['results']:
         persons_list.append(person_data_formating(result))
@@ -36,6 +59,7 @@ def fill_up_base():
     conn.bulk_save_objects(persons_list)
     conn.commit()
     conn.close()
+    print('Database updated')
 
 
 def person_data_formating(data):
@@ -305,6 +329,8 @@ def dob_range(first_date, second_date):
     :return: List of Person objects based on SQLAlchemy model
     :rtype: list
 
+    :raise ValueError: Time don't go back and forth. ValueError informs user about wrong date order.
+
     NOTE:
      "str_to_date()" function requirements:
         Function takes string input formatted in one of four possible scenarios:
@@ -315,6 +341,10 @@ def dob_range(first_date, second_date):
     """
     first_date = str_to_date(first_date)
     second_date = str_to_date(second_date)
+
+    if first_date > second_date:
+        raise ValueError(f"First date shouldn't be later than second date. Try to swap values {first_date} and {second_date}.")
+
     conn = get_session()
     query_result = conn.query(Person).filter(Person.dob >= first_date).filter(Person.dob <= second_date).all()
     return query_result
@@ -373,7 +403,7 @@ def pass_strength_score(password):
 
     NOTE:
         There is way more 'pythonic' solution based on any() build in function,
-        but I found out that if-elif construct in for loop is still more efficient.
+        but I found out that if-elif construct in for loop is more efficient.
         The code is split into two main parts. First part is mentioned above.
         Second part allows to adjust scoring points values.
     """
@@ -427,3 +457,4 @@ def clear_phone_number(data):
             cleared_data.append(symbol)
     data_string = data_string.join(cleared_data)
     return int(data_string)
+
